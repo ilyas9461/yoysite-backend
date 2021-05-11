@@ -66,8 +66,8 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
                     user
                 });
 
-                //res.redirect("http://localhost:8080/");
-                res.redirect("http://192.168.1.124:8080");
+                res.redirect("http://localhost:8080/");
+                //res.redirect("http://192.168.1.124:8080");
             } else {
                 console.log("giriş hatalı ?");
                 //root a döndürür
@@ -143,11 +143,12 @@ userRoute.post("/logout", function (req, res) {
     user = {};
     token = {};
 
-    console.log("body: %j", req.body);
+    //console.log("body: %j", req.body);
 
     const findIndex = users.findIndex(
         (user) => user.firmaWebId === req.body.firmaWebId
     );
+
     if (findIndex !== -1 && users.splice(findIndex, 1)) console.log(users);
 
     console.log("firma: " + req.body.firmaWebId);
