@@ -88,9 +88,10 @@ gunSonuRoute.post("/gunlukmasrafdetay", VerifyToken, async function (req, res) {
 
     let firma = Number(req.body.user);
     let tarih = req.body.tar.split(' ')[0];
-    // console.log(firma, tarih);
+    console.log(firma, tarih);
     let results = await mysqlIslem.getSonGunSonuMasraf(firma, tarih);
-    //console.log("gunluk masraf detay: ",results);
+
+    console.log("gunsonu masraf detay: ",results);
 
     res.json(results);
     res.end();

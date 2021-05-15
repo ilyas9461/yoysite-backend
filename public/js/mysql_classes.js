@@ -63,13 +63,19 @@ class MySqlDBClass {
     static anlikTarihSaat(){
         let datetime = new Date();
         datetime = datetime.toLocaleString();  //29.04.2021 09:25:17
-        let tar1 = datetime.split(" ")[0];
-        let zaman= datetime.split(" ")[1];
-  
-        const [year, month, day] = [...tar1.split(".")];
-        tar1 = day + "-" + month + "-" + year;  // bu şekilde : "yyyy-mm-dd HH:MM:ss" şeklinde oluyor...
-  
+
+       // console.log("mysql class anlik datetime: ", datetime);
+
+        let tar1 = datetime.split(",")[0];
+        //let zaman= datetime.split(" ")[1];
+        //console.log("mysql class anlik tarih : ", tar1);
         
+        let [month, day,  year] = [...tar1.split("/")];  // 5/15/2021, 12:30:14 PM server formatı
+        if(Number(day)<10) day='0'+day;
+        if(Number(month)<10) month='0'+month;
+
+        tar1 = year + "-" + month + "-" + day;  // server tarfında böyle oldu digital ocean ubuntu  
+        //console.log("mysql class anlik tarih : ", tar1);
         // return (tar1 +' '+zaman);
         return tar1;
       }
@@ -116,6 +122,7 @@ class MySqlDBClass {
               "INNER JOIN kullanicilar ON kullanici_giris_takip.kullanici_id = kullanicilar.id "+
               "WHERE kullanici_giris_takip.firma_web_id = '"+firma+"'"+
               "ORDER BY kullanici_giris_takip.basarili_girisler  DESC LIMIT 0, 1";
+
         let kasiyer=await this.doQuery(query);
         kasiyer=kasiyer[0].kullanici_adi;
         
@@ -141,7 +148,7 @@ class MySqlDBClass {
             anlikGunSonu:anlikGunSonu
         };
 
-         console.log('mysql gunSonu: ',retObj);
+        console.log('mysql gunSonu: ',retObj);
 
         return retObj;
     }
