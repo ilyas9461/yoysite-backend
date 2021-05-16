@@ -14,7 +14,9 @@ function verifyToken(req, res, next) {
       return res.status(403).send({auth: false, message: 'No token provided.' });
     else {
       //console.log('verifyToken.js : ', token);
-      token = JSON.parse(token);
+
+      if((typeof token!=='object'))
+        token = JSON.parse(token);
      // console.log('verifyToken.js : ', token);
 
       // verifies secret and checks exp

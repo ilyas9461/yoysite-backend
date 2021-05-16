@@ -1,3 +1,6 @@
+//const URL = 'http://localhost:3000';
+const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
+
 const db = require('./mysql-config');
 
 class MySqlDBClass {
@@ -60,35 +63,52 @@ class MySqlDBClass {
         return this.doQuery(query);
     }
 
-    static anlikTarihSaat(){
+    static anlikTarihSaat() {
         let datetime = new Date();
-        datetime = datetime.toLocaleString();  //29.04.2021 09:25:17
+        let tar1;
+        datetime = datetime.toLocaleString(); //29.04.2021 09:25:17
 
-       // console.log("mysql class anlik datetime: ", datetime);
+        // console.log("mysql class anlik datetime: ", datetime);
 
-        let tar1 = datetime.split(",")[0];
-        //let zaman= datetime.split(" ")[1];
-        //console.log("mysql class anlik tarih : ", tar1);
-        
-        let [month, day,  year] = [...tar1.split("/")];  // 5/15/2021, 12:30:14 PM server formatı
-        if(Number(day)<10) day='0'+day;
-        if(Number(month)<10) month='0'+month;
 
-        tar1 = year + "-" + month + "-" + day;  // server tarfında böyle oldu digital ocean ubuntu  
+        if (URL === 'http://localhost:3000') {
+            /* Local serverda çalışırken tarih formatı... */
+
+            tar1 = datetime.split(" ")[0];
+            //let zaman= datetime.split(" ")[1];
+            console.log("mysql class anlik tarih : ", tar1);
+
+            let [day, month, year] = [...tar1.split(".")]; //  16.05.2021
+            tar1 = year + "-" + month + "-" + day; // 
+
+            /**   ********  */
+        } else {
+            tar1 = datetime.split(",")[0];
+            //let zaman= datetime.split(" ")[1];
+            console.log("mysql class anlik tarih : ", tar1);
+
+            let [month, day, year] = [...tar1.split("/")]; // 5/15/2021, 12:30:14 PM server formatı
+            if (Number(day) < 10) day = '0' + day;
+            if (Number(month) < 10) month = '0' + month;
+
+            tar1 = year + "-" + month + "-" + day; // server tarfında böyle oldu digital ocean ubuntu  
+        }
+
+
         //console.log("mysql class anlik tarih : ", tar1);
         // return (tar1 +' '+zaman);
         return tar1;
-      }
+    }
 
     static async getSonGunSonu(firma) {
         // const query = "SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + 
         // "' AND (tarih>'" + tar1 + " 00:00:10" + "'" + " AND tarih<'" + tar2 + " 23:59:59" + "')";
 
         let query = "SELECT * from gunluk_kasa WHERE firma_web_id='" + firma + "' order by tarih desc limit 0,1";
-        let gunSonu=await this.doQuery(query);
+        let gunSonu = await this.doQuery(query);
 
         /* Anlık ciro için işlemler */
-        const tarih=this.anlikTarihSaat();
+        const tarih = this.anlikTarihSaat();
 
         query = "SELECT SUM(toplam_tutar) AS toplam FROM satislar WHERE (firma_web_id='" + firma + "' and odeme_turu='NAKIT' and tarih='" + tarih + "')";
         let nakitSatislar = await this.doQuery(query); //{"toplam":1055} 
@@ -97,58 +117,58 @@ class MySqlDBClass {
 
         query = "SELECT SUM(tutar) AS toplam FROM misafir_odemeler WHERE (firma_web_id='" + firma + "' and odeme_turu='KKARTI' and tarih='" + tarih + "')";
         let kkartiMisafirOdemeler = await this.doQuery(query);
-        query = "SELECT SUM(tutar) AS toplam FROM misafir_odemeler WHERE (firma_web_id='" + firma+ "' and odeme_turu='NAKIT' and tarih='" + tarih + "')";
+        query = "SELECT SUM(tutar) AS toplam FROM misafir_odemeler WHERE (firma_web_id='" + firma + "' and odeme_turu='NAKIT' and tarih='" + tarih + "')";
         let nakitMisafirOdemeler = await this.doQuery(query);
 
         let nakit = Number(nakitSatislar[0].toplam) + Number(nakitMisafirOdemeler[0].toplam);
         let kkarti = Number(kkartiSatislar[0].toplam) + Number(kkartiMisafirOdemeler[0].toplam);
 
-        let toplam_satis=Number(nakitSatislar[0].toplam)+Number(kkartiSatislar[0].toplam);
-        let toplam_islem=Number(nakitMisafirOdemeler[0].toplam)+Number(kkartiMisafirOdemeler[0].toplam);
-        let toplam_ciro=toplam_satis+toplam_islem;
+        let toplam_satis = Number(nakitSatislar[0].toplam) + Number(kkartiSatislar[0].toplam);
+        let toplam_islem = Number(nakitMisafirOdemeler[0].toplam) + Number(kkartiMisafirOdemeler[0].toplam);
+        let toplam_ciro = toplam_satis + toplam_islem;
 
-        query="SELECT SUM(cikis_tutar) AS toplam FROM kasa_cikis WHERE "+
-             "(firma_web_id ='" + firma +"' AND tarih ='" + tarih +"') AND (cikis_adi = 'MASRAF' OR cikis_adi = 'ODEME')";
-        let anlikMasraf=await this.doQuery(query);
-        anlikMasraf= Number(anlikMasraf[0].toplam);
+        query = "SELECT SUM(cikis_tutar) AS toplam FROM kasa_cikis WHERE " +
+            "(firma_web_id ='" + firma + "' AND tarih ='" + tarih + "') AND (cikis_adi = 'MASRAF' OR cikis_adi = 'ODEME')";
+        let anlikMasraf = await this.doQuery(query);
+        anlikMasraf = Number(anlikMasraf[0].toplam);
 
-        query="SELECT SUM(cikis_tutar) AS toplam FROM kasa_cikis WHERE "+
-             "(firma_web_id ='" + firma +"' AND tarih ='" + tarih +"') AND (cikis_adi = 'BANKA' OR cikis_adi = 'ELDEN VERILEN')";
-        let bankaElden=await this.doQuery(query);
-        bankaElden=Number(bankaElden[0].toplam);    
-        
-        query="SELECT  kullanici_giris_takip.basarili_girisler, kullanicilar.kullanici_adi "+
-              "FROM kullanici_giris_takip "+
-              "INNER JOIN kullanicilar ON kullanici_giris_takip.kullanici_id = kullanicilar.id "+
-              "WHERE kullanici_giris_takip.firma_web_id = '"+firma+"'"+
-              "ORDER BY kullanici_giris_takip.basarili_girisler  DESC LIMIT 0, 1";
+        query = "SELECT SUM(cikis_tutar) AS toplam FROM kasa_cikis WHERE " +
+            "(firma_web_id ='" + firma + "' AND tarih ='" + tarih + "') AND (cikis_adi = 'BANKA' OR cikis_adi = 'ELDEN VERILEN')";
+        let bankaElden = await this.doQuery(query);
+        bankaElden = Number(bankaElden[0].toplam);
 
-        let kasiyer=await this.doQuery(query);
-        kasiyer=kasiyer[0].kullanici_adi;
-        
-        let gunluk_kasa=(toplam_ciro-anlikMasraf-bankaElden);
+        query = "SELECT  kullanici_giris_takip.basarili_girisler, kullanicilar.kullanici_adi " +
+            "FROM kullanici_giris_takip " +
+            "INNER JOIN kullanicilar ON kullanici_giris_takip.kullanici_id = kullanicilar.id " +
+            "WHERE kullanici_giris_takip.firma_web_id = '" + firma + "'" +
+            "ORDER BY kullanici_giris_takip.basarili_girisler  DESC LIMIT 0, 1";
+
+        let kasiyer = await this.doQuery(query);
+        kasiyer = kasiyer[0].kullanici_adi;
+
+        let gunluk_kasa = (toplam_ciro - anlikMasraf - bankaElden);
 
         //console.log('mysql anlikGunSonu: ',ciro,kasa, anlikMasraf);
 
-        const anlikGunSonu={
-            toplam_satis:toplam_satis,
-            toplam_islem:toplam_islem,
-            toplam_ciro :toplam_ciro,
-            nakit_para_tutar:nakit,
-            kredi_karti_tutar:kkarti,
-            masraf_tutar:anlikMasraf,
-            banka_tutar:bankaElden,
-            gunluk_kasa:gunluk_kasa,
-            tarih:tarih,
-            kasiyer:kasiyer
+        const anlikGunSonu = {
+            toplam_satis: toplam_satis,
+            toplam_islem: toplam_islem,
+            toplam_ciro: toplam_ciro,
+            nakit_para_tutar: nakit,
+            kredi_karti_tutar: kkarti,
+            masraf_tutar: anlikMasraf,
+            banka_tutar: bankaElden,
+            gunluk_kasa: gunluk_kasa,
+            tarih: tarih,
+            kasiyer: kasiyer
         };
 
-        let retObj={
-            sonGunSonu:gunSonu,
-            anlikGunSonu:anlikGunSonu
+        let retObj = {
+            sonGunSonu: gunSonu,
+            anlikGunSonu: anlikGunSonu
         };
 
-        console.log('mysql gunSonu: ',retObj);
+        //console.log('mysql gunSonu: ',retObj);
 
         return retObj;
     }
@@ -191,8 +211,9 @@ class MySqlDBClass {
         let kartPromasyon = await this.doQuery(query);
 
         query = "SELECT COUNT(id) AS toplam FROM satislar WHERE (firma_web_id='" + firmaId +
-            "' and (odeme_turu='NAKIT' or odeme_turu='KKARTI')and satis_tur='KART YUKLEME' and tarih='" + tarih + "')";
+            "' and (odeme_turu='KART_DEPOSITO_NAKIT' or odeme_turu='KART_DEPOSITO_KKARTI')and satis_tur='KART YUKLEME' and tarih='" + tarih + "')";
         let kartSayisi = await this.doQuery(query);
+
         query = "SELECT COUNT(id) AS toplam FROM satislar WHERE (firma_web_id='" + firmaId +
             "' and (odeme_turu='KART_DEPOSIT_IADE')and satis_tur='KART YUKLEME' and tarih='" + tarih + "')";
         let kartIadeSayisi = await this.doQuery(query);
@@ -250,13 +271,13 @@ class MySqlDBClass {
                 },
             ]
         };
-        console.log('GunSonuDetayData :',GunSonuDetayData);
+        //console.log('GunSonuDetayData :',GunSonuDetayData);
         return GunSonuDetayData;
     }
 
     static getSonGunSonuBanka(firmaId, tarih) {
         const query = "SELECT * FROM kasa_cikis WHERE firma_web_id='" + firmaId +
-                      "' and tarih='" + tarih + "' AND (cikis_adi='BANKA' or cikis_adi='ELDEN VERILEN')";
+            "' and tarih='" + tarih + "' AND (cikis_adi='BANKA' or cikis_adi='ELDEN VERILEN')";
         return this.doQuery(query);
     }
 
@@ -273,7 +294,7 @@ class MySqlDBClass {
         return this.doQuery(query);
     }
 
-   
+
 
     /*     ******  eski kodlar *******/
     static addUser(userInfos) { //Dizi şeklinde kaydedilecek bilgiler çağrıldığı yerde girilir.

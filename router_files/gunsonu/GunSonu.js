@@ -6,19 +6,12 @@ const mysqlIslem = require("../../public/js/mysql_classes.js"); //__dirname +
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 var VerifyToken = require('../../auth/VerifyToken');
+const firmaDizi=require('../../public/js/functionLys');
 
 gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root için kök.
-    let firma = [];
-    let ind = 0;
 
-    if (req.body.user.length > 0) {
-        for (let i = 0; i < req.body.user.length; i++) {
-            let firmaId = Number(req.body.user.split(",")[i]); //46,8,.. kullanıcı firmaWebId eri
-            if (!Number.isNaN(firmaId)) {
-                firma[ind++] = firmaId;
-            }
-        }
-    }
+    let firma=firmaDizi.olustur( req.body.user);
+
     // console.log('firma:'+firma+ ' Uz:'+firma.length);
     // console.log("gun sonu: %j", req.body);
     //console.log(firma,req.body.tar1,req.body.tar2);
@@ -37,19 +30,10 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 });
 
 gunSonuRoute.post("/songunsonu", VerifyToken, async function (req, res) { //VerifyToken,
-    let firma = [];
-    let ind = 0;
-
     //console.log('/songunsonu:', JSON.parse(req.headers.token));
 
-    if (req.body.user.length > 0) {
-        for (let i = 0; i < req.body.user.length; i++) {
-            let firmaId = Number(req.body.user.split(",")[i]); //46,8,.. kullanıcı firmaWebId eri
-            if (!Number.isNaN(firmaId)) {
-                firma[ind++] = firmaId;
-            }
-        }
-    }
+    let firma=firmaDizi.olustur( req.body.user);
+
     // console.log('firma:'+firma+ ' Uz:'+firma.length);
     // console.log("gun sonu: %j", req.body);
     //console.log(firma,req.body.tar1,req.body.tar2);
@@ -65,7 +49,7 @@ gunSonuRoute.post("/songunsonu", VerifyToken, async function (req, res) { //Veri
        // console.log(gunSonu);
 
     }
-    console.log('results : ',results);
+    //console.log('results : ',results);
 
     res.json(JSON.stringify(results));
     res.end();
@@ -78,7 +62,7 @@ gunSonuRoute.post("/gunlukcirodetay", VerifyToken, async function (req, res) { /
     // console.log(firma, tarih);
 
     let results = await mysqlIslem.getSonGunSonuCiroAyrinti(firma, tarih);
-    //console.log("Ayrinti detay: ",results);
+    console.log("Ayrinti detay: ",results);
 
     res.json(results);
     res.end();
@@ -88,10 +72,10 @@ gunSonuRoute.post("/gunlukmasrafdetay", VerifyToken, async function (req, res) {
 
     let firma = Number(req.body.user);
     let tarih = req.body.tar.split(' ')[0];
-    console.log(firma, tarih);
+    //console.log(firma, tarih);
     let results = await mysqlIslem.getSonGunSonuMasraf(firma, tarih);
 
-    console.log("gunsonu masraf detay: ",results);
+   // console.log("gunsonu masraf detay: ",results);
 
     res.json(results);
     res.end();
@@ -102,7 +86,7 @@ gunSonuRoute.post("/gunlukbankadetay", VerifyToken, async function (req, res) { 
 
     let firma = Number(req.body.user);
     let tarih = req.body.tar.split(' ')[0];
-    console.log(firma, tarih);
+   // console.log(firma, tarih);
     let results = await mysqlIslem.getSonGunSonuBanka(firma, tarih);
     // console.log("gunluk banka detay: ", results);
 

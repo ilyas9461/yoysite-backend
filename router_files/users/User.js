@@ -6,6 +6,8 @@ const mysqlIslem = require("../../public/js/mysql_classes.js"); //__dirname +
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 var VerifyToken = require('../../auth/VerifyToken');
+const firmaDizi = require('../../public/js/functionLys');
+const obj = require('../../public/js/functionLys');
 
 var user = {
     login: false,
@@ -25,6 +27,7 @@ function generateAccessToken(user) {
         expiresIn: '1800s'
     }); //1800s=30 dakika
 }
+
 
 
 // app.post("/giris", async function (req, res) {
@@ -62,13 +65,13 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
                     }) => firmaWebId === user.firmaWebId
                 );
                 if (findUser === undefined) users.push(user);
-                token = generateAccessToken({
-                    user
-                });
+                token = generateAccessToken({user});
 
-               // res.redirect("http://localhost/");
-                // res.redirect("http://localhost:8080/");
-                res.redirect("http://157.230.229.168/");
+                // res.redirect("http://localhost/");
+
+               // res.redirect("http://localhost:8080/");
+                res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
+
             } else {
                 console.log("giriş hatalı ?");
                 //root a döndürür
@@ -87,17 +90,20 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
 // VerifyToken: ara yazılım token burada çözülüp user bilgisi getiriliyor...
 userRoute.get('/userdata', VerifyToken, function (req, res, next) {
 
-    let user = req.user;
+    let user = req.user;//ara yazılımdan geliyor... isteekten değil.
     // console.log('user token :', user);
     res.json(JSON.stringify(user));
     next();
 
 });
 // Kullanıcı girişi ile üretielen token burada gönderilyor....
-userRoute.get("/logined",function (req, res) {
+userRoute.get("/logined", function (req, res) {
 
-    if (user !== null) {
+    // if (user !== null) 
+    if (!obj.isEmpty(user)) {
+
         //console.log('token ::', token);
+
         res.json(JSON.stringify(token));
 
         user = {}; //token istek sonrasıgönderildiği için user ve token boşaltılıyor. Kullanıcı 
@@ -114,25 +120,28 @@ userRoute.get("/logined",function (req, res) {
 });
 
 userRoute.post("/firma", async function (req, res) {
-    let firma = [];
-    let ind = 0;
-    if (req.body.data.length > 0) {
-        for (let i = 0; i < req.body.data.length; i++) {
-            let firmaId = Number(req.body.data.split(",")[i]); //46,8,.. kullanıcı firmaWebId eri
-            if (!Number.isNaN(firmaId)) {
-                firma[ind++] = firmaId;
-            }
-        }
-    }
-    let results = [];
-    for (let i = 0; i < firma.length; i++) {
-        let data = await mysqlIslem.getFirmaData(firma[i]);
-        results[i] = data[0];
-    }
-    console.log('firma:' + firma + ' Uz:' + firma.length);
-    // console.log(JSON.stringify(results));
 
-    res.json(JSON.stringify(results));
+    //if (!obj.isEmpty(user)) {
+        let firma = firmaDizi.olustur(req.body.data); //firma bilgisi data üzerinden geliyor.
+
+        let results = [];
+
+        for (let i = 0; i < firma.length; i++) {
+            let data = await mysqlIslem.getFirmaData(firma[i]);
+            results[i] = data[0];
+        }
+
+        console.log('firma::::' + firma + ' Uz:' + firma.length);
+
+        // console.log(JSON.stringify(results));
+
+        res.json(JSON.stringify(results));
+    // }else{
+    //     res.status(500).send({
+    //         auth: false,
+    //         message: 'Failed to authenticate token.'
+    //     });
+    // }
 
     // res.end();
 });
@@ -141,8 +150,11 @@ userRoute.post("/logout", function (req, res) {
     // req.session.loggedin = false;
     // req.session.username = null;
     // req.session.destroy(null);
+
     user = {};
     token = {};
+
+    console.log('Logout token :',(req.headers.token));
 
     //console.log("body: %j", req.body);
 
@@ -152,7 +164,10 @@ userRoute.post("/logout", function (req, res) {
 
     if (findIndex !== -1 && users.splice(findIndex, 1)) console.log(users);
 
-    console.log("firma: " + req.body.firmaWebId);
+    console.log('Logout user, token :', user,token);
+    //jwt.destroy(req.headers.token);
+
+    res.json(JSON.stringify(user));
 
     //arka planda yönlendirme işlemi on uça yansımadı...asenkorn işlmeden dolayı Mı?**
     //res.redirect('http://localhost:3000/');
