@@ -69,8 +69,8 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
 
                 // res.redirect("http://localhost/");
 
-               // res.redirect("http://localhost:8080/");
-                res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
+                res.redirect("http://localhost:8080/");
+               // res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
 
             } else {
                 console.log("giriş hatalı ?");
