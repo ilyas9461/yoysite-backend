@@ -12,9 +12,10 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 
     let firma=firmaDizi.olustur( req.body.user);
 
-    // console.log('firma:'+firma+ ' Uz:'+firma.length);
-    // console.log("gun sonu: %j", req.body);
+    //console.log('firma:'+firma+ ' Uz:'+firma.length);
+     //console.log("gun sonu kok: %j", req.body);
     //console.log(firma,req.body.tar1,req.body.tar2);
+
     let results = [];
     for (let i = 0; i < firma.length; i++) {
         let data = await mysqlIslem.getGunSonu(
@@ -22,10 +23,11 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
             req.body.tar1,
             req.body.tar2
         );
-        results[i] = data[0];
+        results[i] = data;
     }
-    //console.log(JSON.stringify(results));
-    res.json(JSON.stringify(results));
+    //console.log(JSON.stringify(results[0]));
+
+    res.json(JSON.stringify(results[0]));
     res.end();
 });
 

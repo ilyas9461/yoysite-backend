@@ -131,7 +131,7 @@ userRoute.post("/firma", async function (req, res) {
             results[i] = data[0];
         }
 
-        console.log('firma::::' + firma + ' Uz:' + firma.length);
+        //console.log('firma::::' + firma + ' Uz:' + firma.length);
 
         // console.log(JSON.stringify(results));
 

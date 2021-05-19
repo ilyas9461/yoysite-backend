@@ -58,7 +58,11 @@ class MySqlDBClass {
     static getGunSonu(firma, tar1, tar2) {
         //const query = "SELECT * FROM users WHERE pseudo = '" + pseudo + "' AND password = '" + password + "'";
         //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
-        const query = "SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih>'" + tar1 + " 00:00:10" + "'" + " AND tarih<'" + tar2 + " 23:59:59" + "')";
+        const query = "SELECT * FROM gunluk_kasa "+
+                      "WHERE "+
+                      "firma_web_id = 46 AND (tarih >= '"+ tar1 +" 00:00:00'"+ " AND tarih < '"+ tar2 +" 00:00:00' )";
+       
+        //"SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih >='" + tar1 + " 00:00:10" + "'" + " AND tarih <'" + tar2 + " 23:59:59" + "')";
         // console.log(query);
         return this.doQuery(query);
     }
