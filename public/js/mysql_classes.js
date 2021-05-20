@@ -153,8 +153,6 @@ class MySqlDBClass {
 
         let gunluk_kasa = (toplam_ciro - anlikMasraf - bankaElden);
 
-        //console.log('mysql anlikGunSonu: ',ciro,kasa, anlikMasraf);
-
         const anlikGunSonu = {
             toplam_satis: toplam_satis,
             toplam_islem: toplam_islem,
