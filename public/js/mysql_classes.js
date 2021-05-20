@@ -60,7 +60,7 @@ class MySqlDBClass {
         //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
         const query = "SELECT * FROM gunluk_kasa "+
                       "WHERE "+
-                      "firma_web_id = 46 AND (tarih >= '"+ tar1 +" 00:00:00'"+ " AND tarih < '"+ tar2 +" 00:00:00' )";
+                      "firma_web_id ='" + firma + "' AND (tarih >= '"+ tar1 +" 00:00:00'"+ " AND tarih < '"+ tar2 +" 00:00:00' )";
        
         //"SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih >='" + tar1 + " 00:00:10" + "'" + " AND tarih <'" + tar2 + " 23:59:59" + "')";
         // console.log(query);
@@ -148,6 +148,7 @@ class MySqlDBClass {
             "ORDER BY kullanici_giris_takip.basarili_girisler  DESC LIMIT 0, 1";
 
         let kasiyer = await this.doQuery(query);
+
         kasiyer = kasiyer[0].kullanici_adi;
 
         let gunluk_kasa = (toplam_ciro - anlikMasraf - bankaElden);

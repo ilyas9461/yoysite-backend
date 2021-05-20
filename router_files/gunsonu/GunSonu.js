@@ -12,7 +12,7 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 
     let firma=firmaDizi.olustur( req.body.user);
 
-    //console.log('firma:'+firma+ ' Uz:'+firma.length);
+    console.log('firma:'+firma+ ' Uz:'+firma.length);
      //console.log("gun sonu kok: %j", req.body);
     //console.log(firma,req.body.tar1,req.body.tar2);
 
@@ -25,9 +25,10 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
         );
         results[i] = data;
     }
-    //console.log(JSON.stringify(results[0]));
+    console.log(JSON.stringify(results));
 
-    res.json(JSON.stringify(results[0]));
+    //res.json(JSON.stringify(results[0]));
+    res.json(JSON.stringify(results));
     res.end();
 });
 
