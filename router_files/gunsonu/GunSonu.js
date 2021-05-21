@@ -18,12 +18,19 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 
     let results = [];
     for (let i = 0; i < firma.length; i++) {
-        let data = await mysqlIslem.getGunSonu(
-            firma[i],
-            req.body.tar1,
-            req.body.tar2
-        );
-        results[i] = data;
+        try {
+            let data = await mysqlIslem.getGunSonu(
+                firma[i],
+                req.body.tar1,
+                req.body.tar2
+            );
+    
+            results[i] = data;
+            
+        } catch (error) {
+            console.log("Hata", error);
+        }
+        
     }
     console.log(JSON.stringify(results));
 

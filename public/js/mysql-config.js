@@ -1,24 +1,24 @@
 const mysql = require('mysql');
 
-// const db = mysql.createPool({
-//   host: "localhost",
-//   user: "root",
-//   password:"yoyuncak26",
-//   database:"oyun_havuzu",
-//   multipleStatements: true,
-//   dateStrings: true
-// });
-
-/** Uzak WEb */
-
 const db = mysql.createPool({
-  host: "157.230.229.168",
-  user: "yoyuncak26",
-  password:"l4W1ule0hlemV2me",
-  database:"oyun_havuzu_web",
+  host: "localhost",
+  user: "root",
+  password:"yoyuncak26",
+  database:"oyun_havuzu",
   multipleStatements: true,
   dateStrings: true
 });
+
+/** Uzak WEb */
+
+// const db = mysql.createPool({
+//   host: "157.230.229.168",
+//   user: "yoyuncak26",
+//   password:"l4W1ule0hlemV2me",
+//   database:"oyun_havuzu_web",
+//   multipleStatements: true,
+//   dateStrings: true
+// });
 
 
 db.getConnection( async (err) => {

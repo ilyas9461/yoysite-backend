@@ -69,8 +69,8 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
 
                 // res.redirect("http://localhost/");
 
-               // res.redirect("http://localhost:8080/");
-                res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
+               res.redirect("http://localhost:8080/");
+                // res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
 
             } else {
                 console.log("giriş hatalı ?");
@@ -110,10 +110,12 @@ userRoute.get("/logined", function (req, res) {
         token = {}; //local deki token ile server dan istekte bulunacak token doğru ve süresi varsa
         //istek ile ilgili bilgiler gönderilecek.
     } else {
-        res.status(500).send({
-            auth: false,
-            message: 'Failed to authenticate token.'
-        });
+        // res.status(500).send({
+        //     auth: false,
+        //     message: 'Failed to authenticate token.'
+        // });
+        res.json(JSON.stringify(token)); //daha önce gönderildiği için boş token gönderiliyor
+                                         // localStorage dan çekilerek user bilgisi sorgulanıyor.   
         user = {};
         token = {};
     }
@@ -136,14 +138,6 @@ userRoute.post("/firma", async function (req, res) {
         // console.log(JSON.stringify(results));
 
         res.json(JSON.stringify(results));
-    // }else{
-    //     res.status(500).send({
-    //         auth: false,
-    //         message: 'Failed to authenticate token.'
-    //     });
-    // }
-
-    // res.end();
 });
 
 userRoute.post("/logout", function (req, res) {
@@ -164,7 +158,7 @@ userRoute.post("/logout", function (req, res) {
 
     if (findIndex !== -1 && users.splice(findIndex, 1)) console.log(users);
 
-    console.log('Logout user, token :', user,token);
+    //console.log('Logout user, token :', user,token);
     //jwt.destroy(req.headers.token);
 
     res.json(JSON.stringify(user));
