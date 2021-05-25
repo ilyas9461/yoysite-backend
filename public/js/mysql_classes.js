@@ -44,29 +44,6 @@ class MySqlDBClass {
     //  ===== core =====
 
     // === Yardımcı Fonksiyonlar: Amaca uygun sorguları yürütürler  =================
-
-    /** Bu fonksiyonlar çağrıldıkları yerde await ifadesi ile çağrılmalı ve çağıran 
-     * fonksiyonunda (get, post istek işleme callback fonksiyonu) async öneki alması gerekir.
-     */
-    static login(kAdi, sifre) {
-        //const query = "SELECT * FROM users WHERE pseudo = '" + pseudo + "' AND password = '" + password + "'";
-        //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
-        const query = "SELECT * FROM web_user WHERE kul_adi ='" + kAdi + "' AND sifre='" + sifre + "'";
-        return this.doQuery(query);
-    }
-
-    static getGunSonu(firma, tar1, tar2) {
-        //const query = "SELECT * FROM users WHERE pseudo = '" + pseudo + "' AND password = '" + password + "'";
-        //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
-        const query = "SELECT * FROM gunluk_kasa "+
-                      "WHERE "+
-                      "firma_web_id ='" + firma + "' AND (tarih >= '"+ tar1 +" 00:00:00'"+ " AND tarih < '"+ tar2 +" 00:00:00' )";
-       
-        //"SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih >='" + tar1 + " 00:00:10" + "'" + " AND tarih <'" + tar2 + " 23:59:59" + "')";
-        // console.log(query);
-        return this.doQuery(query);
-    }
-
     static anlikTarihSaat() {
         let datetime = new Date();
         let tar1;
@@ -80,7 +57,7 @@ class MySqlDBClass {
 
             tar1 = datetime.split(" ")[0];
             //let zaman= datetime.split(" ")[1];
-            console.log("mysql class anlik tarih : ", tar1);
+            //console.log("mysql class anlik tarih : ", tar1);
 
             let [day, month, year] = [...tar1.split(".")]; //  16.05.2021
             tar1 = year + "-" + month + "-" + day; // 
@@ -89,7 +66,7 @@ class MySqlDBClass {
         } else {
             tar1 = datetime.split(",")[0];
             //let zaman= datetime.split(" ")[1];
-            console.log("mysql class anlik tarih : ", tar1);
+            //console.log("mysql class anlik tarih : ", tar1);
 
             let [month, day, year] = [...tar1.split("/")]; // 5/15/2021, 12:30:14 PM server formatı
             if (Number(day) < 10) day = '0' + day;
@@ -103,6 +80,73 @@ class MySqlDBClass {
         // return (tar1 +' '+zaman);
         return tar1;
     }
+    /** Bu fonksiyonlar çağrıldıkları yerde await ifadesi ile çağrılmalı ve çağıran 
+     * fonksiyonunda (get, post istek işleme callback fonksiyonu) async öneki alması gerekir.
+     */
+    static login(kAdi, sifre) {
+        //const query = "SELECT * FROM users WHERE pseudo = '" + pseudo + "' AND password = '" + password + "'";
+        //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
+        const query = "SELECT * FROM web_user WHERE kul_adi ='" + kAdi + "' AND sifre='" + sifre + "'";
+        return this.doQuery(query);
+    }
+
+    static getGunSonu(firma, tar1, tar2) {
+        //const query = "SELECT * FROM users WHERE pseudo = '" + pseudo + "' AND password = '" + password + "'";
+        //const query ="SELECT * FROM kullanicilar WHERE kullanici_adi ='"+ kAdi+"' AND kullanici_sifre='"+sifre+"'";
+        const query = "SELECT * FROM gunluk_kasa " +
+            "WHERE " +
+            "firma_web_id ='" + firma + "' AND (tarih >= '" + tar1 + " 00:00:00'" + " AND tarih < '" + tar2 + " 00:00:00' )"+
+            "ORDER BY  tarih";  //artan sırada sırala
+
+        //"SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih >='" + tar1 + " 00:00:10" + "'" + " AND tarih <'" + tar2 + " 23:59:59" + "')";
+        console.log(query);
+        return this.doQuery(query);
+    }
+
+    static tarihliListeler(sorguListe) {
+
+        if (sorguListe.islem === 'Gun Sonu') {
+           // console.log("/tarihliliste: GUN SONU", sorguListe);
+            return this.getGunSonu(sorguListe.firma, sorguListe.tar1, sorguListe.tar2);
+
+        }
+
+        if (sorguListe.islem === 'Masraf') {
+            const query = "SELECT " +
+                "kasa_cikis.cikis_adi, cikis_turu.cesit, kasa_cikis.cikis_tutar,  kasa_cikis.tarih_zaman, kasa_cikis.islem_not " +
+                "FROM " + "kasa_cikis " +
+                "INNER JOIN cikis_turu " +
+                "ON kasa_cikis.cikis_tur_id = cikis_turu.id " +
+                "WHERE ((kasa_cikis.cikis_adi='MASRAF' or kasa_cikis.cikis_adi='ODEME') " +
+                "and kasa_cikis.firma_web_id='" + sorguListe.firma + "' " +
+                "and (kasa_cikis.tarih>='" + sorguListe.tar1 + "' and kasa_cikis.tarih < '" + sorguListe.tar2 + "')) "+
+                "ORDER BY kasa_cikis.tarih_zaman";  //artan sırada sırala
+            return this.doQuery(query);
+        }
+
+        if (sorguListe.islem === 'Banka Elden') {
+
+            const query = "SELECT " +
+                "kasa_cikis.cikis_adi, kasa_cikis.cikis_tutar, bankalar.banka_adi, kasa_cikis.tarih_zaman, kasa_cikis.islem_not " +
+                "FROM kasa_cikis " +
+                "INNER JOIN bankalar ON kasa_cikis.banka_id = bankalar.id " +
+                "WHERE kasa_cikis.cikis_adi = 'BANKA' AND firma_web_id='" + sorguListe.firma + "' " +
+                "and (kasa_cikis.tarih>='" + sorguListe.tar1 + "' and kasa_cikis.tarih < '" + sorguListe.tar2 + "')"+
+                "UNION " +
+                "SELECT " +
+                "kasa_cikis.cikis_adi, kasa_cikis.cikis_tutar, kasa_cikis.banka_id, kasa_cikis.tarih_zaman, kasa_cikis.islem_not " +
+                "FROM kasa_cikis " +
+                "WHERE kasa_cikis.cikis_adi = 'ELDEN VERILEN' AND kasa_cikis.firma_web_id='" + sorguListe.firma + "' " +
+                "and (kasa_cikis.tarih>='" + sorguListe.tar1 + "' and kasa_cikis.tarih < '" + sorguListe.tar2 + "') " +
+                "ORDER BY tarih_zaman"; //artan sırada sırala
+
+                console.log("sorgu : " ,query);
+
+            return this.doQuery(query);
+
+        }
+    }
+
 
     static async getSonGunSonu(firma) {
         // const query = "SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + 
@@ -287,8 +331,7 @@ class MySqlDBClass {
     static getSonGunSonuMasraf(firmaId, tarih) {
         const query = "SELECT " +
             "kasa_cikis.cikis_adi, cikis_turu.tur, cikis_turu.cesit, kasa_cikis.cikis_tutar, kasa_cikis.islem_not " +
-            "FROM " +
-            "kasa_cikis " +
+            "FROM " + "kasa_cikis " +
             "INNER JOIN cikis_turu " +
             "ON kasa_cikis.cikis_tur_id = cikis_turu.id " +
             "WHERE ( (kasa_cikis.cikis_adi='MASRAF' or kasa_cikis.cikis_adi='ODEME') and kasa_cikis.firma_web_id='" + firmaId +

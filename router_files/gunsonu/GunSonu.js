@@ -40,31 +40,13 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 });
 
 gunSonuRoute.post("/tarihliliste", async function (req, res) { 
-    let firma=firmaDizi.olustur( req.body.user);
+   //console.log("/tarihliliste: %j", req.body);
 
-    console.log('firma:'+firma+ ' Uz:'+firma.length);
-     //console.log("gun sonu kok: %j", req.body);
-    //console.log(firma,req.body.tar1,req.body.tar2);
+    let results= await mysqlIslem.tarihliListeler(req.body);
 
-    let results = [];
-    for (let i = 0; i < firma.length; i++) {
-        try {
-            let data = await mysqlIslem.getGunSonu(
-                firma[i],
-                req.body.tar1,
-                req.body.tar2
-            );
-    
-            results[i] = data;
-            
-        } catch (error) {
-            console.log("Hata", error);
-        }
-        
-    }
-    console.log(JSON.stringify(results));
+   console.log(JSON.stringify(results));
 
-    //res.json(JSON.stringify(results[0]));
+   // res.json(JSON.stringify(results[0]));
     res.json(JSON.stringify(results));
     res.end();
 
