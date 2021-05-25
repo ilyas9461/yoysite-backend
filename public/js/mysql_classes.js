@@ -1,5 +1,5 @@
-const URL = 'http://localhost:3000';
-// const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
+// const URL = 'http://localhost:3000';
+const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
 
 const db = require('./mysql-config');
 

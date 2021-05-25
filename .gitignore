@@ -33,3 +33,6 @@ yarn-error.log*
 *.sln
 *.sw*
 
+#config files
+mysql-config.*
+
