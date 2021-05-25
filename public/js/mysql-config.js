@@ -1,10 +1,15 @@
 const mysql = require('mysql');
+const dotenv = require('dotenv');
+
+dotenv.config({path:__dirname+'/../../.env'});
+
+//console.log('WEB HOST :', process.env.WEB_HOST);
 
 // const db = mysql.createPool({
 //   host: "localhost",
-//   user: "root",
-//   password:"yoyuncak26",
-//   database:"oyun_havuzu",
+//   user: process.env.LOCAL_USER,
+//   password:process.env.LOCAL_PASS,
+//   database:process.env.LOCAL_DATABASE,
 //   multipleStatements: true,
 //   dateStrings: true
 // });
@@ -12,14 +17,13 @@ const mysql = require('mysql');
 /** Uzak WEb */
 
 const db = mysql.createPool({
-  host: "157.230.229.168",
-  user: "yoyuncak26",
-  password:"l4W1ule0hlemV2me",
-  database:"oyun_havuzu_web",
+  host: process.env.WEB_HOST,
+  user: process.env.WEB_USER,
+  password:process.env.WEB_PASS,
+  database:process.env.WEB_DATABASE,
   multipleStatements: true,
   dateStrings: true
 });
-
 
 db.getConnection( async (err) => {
     if (err) console.log(err, new Date());
