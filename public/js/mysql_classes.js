@@ -1,5 +1,5 @@
-// const URL = 'http://localhost:3000';
-const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
+const URL = 'http://localhost:3000';
+// const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
 
 const db = require('./mysql-config');
 
@@ -99,7 +99,7 @@ class MySqlDBClass {
             "ORDER BY  tarih";  //artan sırada sırala
 
         //"SELECT * FROM gunluk_kasa WHERE firma_web_id ='" + firma + "' AND (tarih >='" + tar1 + " 00:00:10" + "'" + " AND tarih <'" + tar2 + " 23:59:59" + "')";
-        console.log(query);
+       // console.log(query);
         return this.doQuery(query);
     }
 

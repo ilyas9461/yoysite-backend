@@ -40,11 +40,11 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 });
 
 gunSonuRoute.post("/tarihliliste", async function (req, res) { 
-   //console.log("/tarihliliste: %j", req.body);
+   console.log("/tarihliliste: %j", req.body);
 
     let results= await mysqlIslem.tarihliListeler(req.body);
 
-   console.log(JSON.stringify(results));
+   //console.log(JSON.stringify(results));
 
    // res.json(JSON.stringify(results[0]));
     res.json(JSON.stringify(results));
