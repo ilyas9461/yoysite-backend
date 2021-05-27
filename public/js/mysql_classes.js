@@ -1,5 +1,5 @@
-const URL = 'http://localhost:3000';
-// const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
+// const URL = 'http://localhost:3000';
+const URL='http://157.230.229.168:3000';  ///digital ocean ubuntu server
 
 const db = require('./mysql-config');
 
@@ -140,7 +140,7 @@ class MySqlDBClass {
                 "and (kasa_cikis.tarih>='" + sorguListe.tar1 + "' and kasa_cikis.tarih < '" + sorguListe.tar2 + "') " +
                 "ORDER BY tarih_zaman"; //artan sırada sırala
 
-                console.log("sorgu : " ,query);
+               // console.log("sorgu : " ,query);
 
             return this.doQuery(query);
 

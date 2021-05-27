@@ -39,14 +39,10 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
         try {
             let results = await mysqlIslem.login(username, password);
 
-            console.log("result:" + JSON.stringify(results));
+            // console.log("result:" + JSON.stringify(results));
 
             if (results.length != 0) {
-                console.log("giriş başarılı....");
-                // req.session.loggedin = true;
-                // req.session.username = username;
-                // req.session.kid = results[0].id;
-
+                // console.log("giriş başarılı....");
                 res.Buffer = true;
                 res.ExpiresAbsolute = new Date().getHours() - 1;
                 res.Expires = 0;
@@ -69,8 +65,8 @@ userRoute.post("/", async function (req, res) { // user route ait kök roout   c
 
                 // res.redirect("http://localhost/");
 
-               res.redirect("http://localhost:8080/");
-            //    res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
+            //    res.redirect("http://localhost:8080/");
+               res.redirect("http://157.230.229.168/"); //digital ocean ubuntu server
 
             } else {
                 console.log("giriş hatalı ?");
@@ -148,7 +144,7 @@ userRoute.post("/logout", function (req, res) {
     user = {};
     token = {};
 
-    console.log('Logout token :',(req.headers.token));
+    // console.log('Logout token :',(req.headers.token));
 
     //console.log("body: %j", req.body);
 

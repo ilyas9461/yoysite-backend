@@ -12,7 +12,7 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 
     let firma=firmaDizi.olustur( req.body.user);
 
-    console.log('firma:'+firma+ ' Uz:'+firma.length);
+    // console.log('firma:'+firma+ ' Uz:'+firma.length);
      //console.log("gun sonu kok: %j", req.body);
     //console.log(firma,req.body.tar1,req.body.tar2);
 
@@ -32,7 +32,7 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
         }
         
     }
-    console.log(JSON.stringify(results));
+    // console.log(JSON.stringify(results));
 
     //res.json(JSON.stringify(results[0]));
     res.json(JSON.stringify(results));
@@ -40,7 +40,7 @@ gunSonuRoute.post("/", async function (req, res) { // '/gunsonu' isteği bu root
 });
 
 gunSonuRoute.post("/tarihliliste", async function (req, res) { 
-   console.log("/tarihliliste: %j", req.body);
+//    console.log("/tarihliliste: %j", req.body);
 
     let results= await mysqlIslem.tarihliListeler(req.body);
 
@@ -86,7 +86,7 @@ gunSonuRoute.post("/gunlukcirodetay", VerifyToken, async function (req, res) { /
     // console.log(firma, tarih);
 
     let results = await mysqlIslem.getSonGunSonuCiroAyrinti(firma, tarih);
-    console.log("Ayrinti detay: ",results);
+    // console.log("Ayrinti detay: ",results);
 
     res.json(results);
     res.end();
